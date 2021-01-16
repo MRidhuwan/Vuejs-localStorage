@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, minimal-ui">
+  
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900" rel="stylesheet">
+  
+
+  <!-- Compiled and minified CSS -->
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css">
+     
+</head>
+<body>
+  <div id="app">
+   <template>
+    <div class="container">
+      <div class="row">
+        <div class="col-md-8">
+          <table class="table table-bordered table-striped">
+            <thead>
+              <tr>
+                <th>id</th>
+                <th>Nama</th>
+                <th>Qty</th>
+                <th>Price</th>
+                <th>Action</th>
+
+              </tr>
+            </thead>
+          <tbody>
+            <tr v-for="item in items" v-bind:key="item.id">
+              <td>{{ item.id }}</td>
+              <td>{{ item.name }}</td>
+              <td>{{ item.qty }}</td>
+              <td>{{ item.price }}</td>
+
+              <td>
+                <div class="btn-group">
+                  <button @click="edit(item)" class="btn btn-dark btn-outline-info">Edit</button>
+                  <button @click="destroy(item)" class="btn btn-danger btn-outline-danger">Delete</button>
+                </div>
+              </td>
+            </tr>
+          </tbody>
+          </table>
+        </div>
+        <div class="col-md-4">
+              <form action="">
+                <div class="form-group">
+                  <label>ID Manual</label>
+                  <input type="text" v-model="input.id" class="form-control">
+                </div>
+                <div class="form-group">
+                  <label>Nama Barang</label>
+                  <input type="text" v-model="input.name" class="form-control">
+                </div>
+                <div class="form-group">
+                  <label>Qty</label>
+                  <input type="text" v-model="input.qty" class="form-control">
+                </div>
+                <div class="form-group">
+                  <label>Price</label>
+                  <input type="text" v-model="input.price" class="form-control">
+                </div>
+
+                <button v-if="savebtn" @click.prevent="save" class="btn btn-primary">Save</button>
+                <button v-if="updatebtn" @click.prevent="update(input.id)" class="btn btn-primary">Update</button>
+                <button @click.prevent="clear" class="btn btn-danger">Clear</button>
+              </form>
+            </div>
+        </div>
+      </div>
+    </template>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/vue@2.x/dist/vue.js"></script>
+  <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+  
+  <script>
+    new Vue({
+      el: '#app',
+      data:{
+        msg:'VueJs & LocalStorage',
+         items : [
+          
+        ],
+        input:{
+          id:'',
+          name:'',
+          qty:'',
+          price:'',
+        },
+        savebtn:true,
+        updatebtn:false
+      },
+      created: function(){
+        this.view()
+        this.dataLocal()
+        this.items = JSON.parse(localStorage.getItem('items'))
+      },
+      methods:{
+        dataLocal: function(){
+          let parsed = JSON.stringify(this.items)
+          localStorage.setItem('items', parsed)
+        },
+
+        view:function(){
+          this.items[{}]
+        },
+
+        save:function(){
+          var id = this.input.id
+          var name = this.input.name
+          var qty = this.input.qty
+          var price = this.input.price
+
+          this.items.push({
+            id:id,
+            name,name,
+            qty:qty,
+            price:price
+          })
+
+          this.dataLocal()
+          this.clear()
+          swal( "Create", "Berhasil Create Data", "success"
+          )
+        },
+        clear:function(){
+          this.savebtn = true
+          this.updatebtn= false
+          this.input.id = ''
+          this.input.name = ''
+          this.input.qty = ''
+          this.input.price = ''
+        },
+        edit:function(item){
+          this.savebtn = false
+          this.updatebtn = true
+          this.input.id = item.id
+          this.input.name = item.name
+          this.input.qty = item.qty
+          this.input.price = item.price
+        },
+
+        update: function (id){
+          var myid = id - 1
+          Object.assign(this.items[myid],this.input)
+
+          this.clear()
+          this.dataLocal()
+          
+          swal("Update", "Data to Upddate", "warning")
+        },
+
+        destroy: function (item){
+          var del = this.items.indexOf(item)
+          swal({
+            title:"Are You Sure",
+            text:"yakin data ingin di hapus",
+            icon:"error",
+            buttons:true,
+            dangermode:true
+
+          }).then((willDelete => {
+            if(willDelete){
+              this.items.splice(del, 1)
+              this.dataLocal()
+
+            } else{
+
+            }
+          }))
+        }
+      }
+    })
+  </script>
+</body>
+</html>
